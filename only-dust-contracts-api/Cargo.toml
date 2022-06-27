@@ -1,0 +1,12 @@
+[package]
+edition = "2021"
+name    = "only-dust-contracts-api"
+version = "0.1.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+lazy_static = { version = "1.4.0", default-features = false }
+starknet    = { git = "https://github.com/xJonathanLEI/starknet-rs", default-features = false }
+
+[dev-dependencies]

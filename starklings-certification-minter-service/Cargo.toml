@@ -1,0 +1,32 @@
+[package]
+edition = "2021"
+name    = "starklings-certification-minter-service"
+version = "0.1.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# web server
+axum      = { version = "0.5.9", default-features = false, features = ["json"] }
+axum-auth = { version = "0.2.0", default-features = false }
+serde     = { version = "1.0.137", features = ["derive"], default-features = false }
+tokio     = { version = "1.19.2", default-features = false, features = ["full"] }
+
+# utils
+lazy_static = { version = "1.4.0", default-features = false }
+toml        = { version = "0.5.9", default-features = false }
+
+# business
+octocrab = { version = "0.16.0", default-features = false }
+starknet = { git = "https://github.com/xJonathanLEI/starknet-rs" }
+
+# tracing
+tracing = { version = "0.1.35", default-features = false }
+tracing-subscriber = { version = "0.3.11", default-features = false, features = [
+  "fmt",
+] }
+
+# local
+only-dust-contracts-api = { path = "../only-dust-contracts-api" }
+
+[dev-dependencies]
