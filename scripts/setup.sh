@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 
 cargo install taplo-cli grcov
 cargo install conventional_commits_linter --version 0.9.0
