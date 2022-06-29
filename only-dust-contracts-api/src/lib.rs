@@ -1,31 +1,25 @@
-#[macro_use]
-extern crate lazy_static;
-
-mod config;
+pub mod only_dust_config;
 mod profile_id;
 
-use config::{MINTER_ACCOUNT, NFT_CONTRACT_ADDRESS, PROFILE_REGISTRY_CONTRACT_ADDRESS};
 pub use profile_id::ProfileId;
 use starknet::{
-	accounts::{Account, Call, SingleOwnerAccount},
+	accounts::{Account, Call},
 	core::types::{
 		AddTransactionResult, BlockId, CallContractResult, FieldElement,
 		InvokeFunctionTransactionRequest,
 	},
 	macros::selector,
-	providers::{Provider, SequencerGatewayProvider, SequencerGatewayProviderError},
-	signers::LocalWallet,
+	providers::Provider,
 };
 
-pub async fn mint_nft(
+pub async fn mint_nft<A: Account + Sync>(
+	minter_account: A,
+	nft_contract_address: FieldElement,
 	recipient_id: ProfileId,
 	token_id: FieldElement,
 	exercise_id: FieldElement,
 	amount: FieldElement,
-) -> Result<
-	AddTransactionResult,
-	<SingleOwnerAccount<SequencerGatewayProvider, LocalWallet> as Account>::SendTransactionError,
-> {
+) -> Result<AddTransactionResult, A::SendTransactionError> {
 	// Build the call payload
 	let mut calldata = Vec::with_capacity(5);
 	calldata.push(recipient_id.low());
@@ -35,9 +29,9 @@ pub async fn mint_nft(
 	calldata.push(amount);
 
 	// Create the transaction
-	MINTER_ACCOUNT
+	minter_account
 		.execute(&[Call {
-			to: *NFT_CONTRACT_ADDRESS,
+			to: nft_contract_address,
 			selector: selector!("mint"),
 			calldata,
 		}])
@@ -45,16 +39,17 @@ pub async fn mint_nft(
 		.await
 }
 
-pub async fn get_profile_id(
+pub async fn get_profile_id<P: Provider>(
+	provider: P,
+	profile_registry_contract_address: FieldElement,
 	github_id: FieldElement,
-) -> Result<CallContractResult, SequencerGatewayProviderError> {
-	let provider = config::get_provider();
+) -> Result<CallContractResult, P::Error> {
 	let calldata = vec![github_id];
 
 	provider
 		.call_contract(
 			InvokeFunctionTransactionRequest {
-				contract_address: *PROFILE_REGISTRY_CONTRACT_ADDRESS,
+				contract_address: profile_registry_contract_address,
 				entry_point_selector: selector!("get_user_information_from_github_handle"),
 				calldata,
 				signature: Default::default(), // Signing the call is not required

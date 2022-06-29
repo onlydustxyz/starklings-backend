@@ -7,18 +7,23 @@ version = "0.1.0"
 
 [dependencies]
 # web server
-axum      = { version = "0.5.9", default-features = false, features = ["json"] }
+axum = { version = "0.5.9", default-features = false, features = ["json"] }
 axum-auth = { version = "0.2.0", default-features = false }
-serde     = { version = "1.0.137", features = ["derive"], default-features = false }
-tokio     = { version = "1.19.2", default-features = false, features = ["full"] }
+axum-macros = "0.2.3"
+tokio = { version = "1.19.2", default-features = false, features = ["full"] }
+tower = { version = "0.4.13", default-features = false }
+tower-http = { version = "0.3.4", default-features = false, features = [
+  "add-extension",
+] }
 
 # utils
 lazy_static = { version = "1.4.0", default-features = false }
+serde       = { version = "1.0.137", features = ["derive"], default-features = false }
 toml        = { version = "0.5.9", default-features = false }
 
 # business
 octocrab = { version = "0.16.0", default-features = false }
-starknet = { git = "https://github.com/xJonathanLEI/starknet-rs" }
+starknet = { git = "https://github.com/xJonathanLEI/starknet-rs", default-features = false }
 
 # tracing
 tracing = { version = "0.1.35", default-features = false }

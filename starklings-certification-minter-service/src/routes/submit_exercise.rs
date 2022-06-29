@@ -1,12 +1,20 @@
 use crate::{
-	course_config::{get_nft_id_for_section, get_uui_and_points_for_exercise},
+	course_config::{CourseConfig, CourseConfigGetter},
 	routes::{unwrap_option_or_return, unwrap_result_or_return},
+	ReadOnlySharedState,
 };
-use axum::{http::StatusCode, response::IntoResponse, Json};
+use axum::{extract::Extension, http::StatusCode, response::IntoResponse, Json};
 use axum_auth::AuthBearer;
+use axum_macros::debug_handler;
 use octocrab::Octocrab;
-use only_dust_contracts_api::ProfileId;
+use only_dust_contracts_api::{
+	only_dust_config::{get_provider, OnlyDustConfig, OnlyDustConfigGetter},
+	ProfileId,
+};
 use serde::Deserialize;
+use starknet::{
+	accounts::SingleOwnerAccount, providers::SequencerGatewayProvider, signers::LocalWallet,
+};
 
 /// Body expected by `submit_exercise`
 #[derive(Deserialize)]
@@ -26,9 +34,16 @@ pub struct SubmitExercisePayload {
 ///
 /// # Body
 /// `exercise_path` is a string respecting this format "<section_name>/<exercise_name>"
-pub async fn submit_exercise(
+#[debug_handler]
+pub(crate) async fn submit_exercise(
 	AuthBearer(token): AuthBearer,
 	Json(payload): Json<SubmitExercisePayload>,
+	Extension(shared_course_config): Extension<ReadOnlySharedState<CourseConfig>>,
+	Extension(shared_onlydust_config): Extension<
+		ReadOnlySharedState<
+			OnlyDustConfig<SingleOwnerAccount<SequencerGatewayProvider, LocalWallet>>,
+		>,
+	>,
 ) -> impl IntoResponse {
 	// Retrieve exercise related data from our static config
 	let token_id = {
@@ -38,12 +53,12 @@ pub async fn submit_exercise(
 		);
 
 		crate::routes::unwrap_option_or_return!(
-			get_nft_id_for_section(section_name),
+			shared_course_config.get_nft_id_for_section(section_name),
 			StatusCode::INTERNAL_SERVER_ERROR.into_response()
 		)
 	};
 	let (exercise_id, amount) = unwrap_option_or_return!(
-		get_uui_and_points_for_exercise(&payload.exercise_path),
+		shared_course_config.get_id_and_points_for_exercise(&payload.exercise_path),
 		StatusCode::INTERNAL_SERVER_ERROR.into_response()
 	);
 
@@ -63,7 +78,12 @@ pub async fn submit_exercise(
 
 		// Query the OnlyDust registry for the profile id
 		let raw_profile_id = unwrap_result_or_return!(
-			only_dust_contracts_api::get_profile_id((*user.id).into()).await,
+			only_dust_contracts_api::get_profile_id(
+				get_provider(),
+				shared_onlydust_config.profile_registry_contract_address(),
+				(*user.id).into()
+			)
+			.await,
 			StatusCode::INTERNAL_SERVER_ERROR.into_response()
 		)
 		.result;
@@ -78,7 +98,15 @@ pub async fn submit_exercise(
 	// Create a transaction to mint the token
 	let add_transaction_result = {
 		unwrap_result_or_return!(
-			only_dust_contracts_api::mint_nft(profile_id, token_id, exercise_id, amount).await,
+			only_dust_contracts_api::mint_nft(
+				shared_onlydust_config.minter_account(),
+				shared_onlydust_config.nft_contract_address(),
+				profile_id,
+				token_id,
+				exercise_id,
+				amount
+			)
+			.await,
 			StatusCode::INTERNAL_SERVER_ERROR.into_response()
 		)
 	};
