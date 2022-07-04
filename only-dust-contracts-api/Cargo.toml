@@ -1,10 +1,13 @@
 [package]
 edition = "2021"
-name    = "minter"
+name    = "only-dust-contracts-api"
 version = "0.1.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+async-trait = "0.1.56"
+lazy_static = "1.4.0"
+starknet    = { git = "https://github.com/xJonathanLEI/starknet-rs", default-features = false }
 
 [dev-dependencies]

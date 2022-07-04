@@ -1,0 +1,37 @@
+[[sections]]
+id   = 0
+name = "syntax"
+
+[[sections.exercises]]
+id     = "0x41d755d5f7c1779b25dd62598cb8d34ec060a589d84a6dba7bfa165132a79e"
+name   = "syntax01"
+points = 5
+[[sections.exercises]]
+id     = "0x54e49bf7e0c694305f9e1525514fb632a07f7c4ba71364ffd9305613e9248a"
+name   = "syntax02"
+points = 10
+[[sections.exercises]]
+id     = "0x818587eaa992eb0b16e172e81f2a389a84ce195445849c600ee24ab03f1f46"
+name   = "syntax03"
+points = 15
+[[sections.exercises]]
+id     = "0x55f26416faa0b861c3022b1a02dfa83158841ff7c66b57d4a5b905f567cc95"
+name   = "syntax04"
+points = 30
+[[sections.exercises]]
+id     = "0x9a150d862a176b15703c9382df4e1515ee47d635c7583af76c4519b82e1b97"
+name   = "syntax05"
+points = 40
+
+[[sections]]
+id   = 1
+name = "strings"
+
+[[sections.exercises]]
+id     = "0x2e577f9c9f3f5737771ad5cf44b5753b23626d0169c03773d5e3239020797f"
+name   = "strings00"
+points = 40
+[[sections.exercises]]
+id     = "0x4266d8345b3d2517588c64e916d59f0548244abbeb0709097b9e37119aa384"
+name   = "strings01"
+points = 60

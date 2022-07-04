@@ -1,2 +1,6 @@
 [workspace]
-members = ["api", "minter"]
+members = [
+  "starklings-certification-minter-service",
+  "only-dust-contracts-api",
+  "rand_felt",
+]

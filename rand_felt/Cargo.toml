@@ -1,0 +1,8 @@
+[package]
+edition = "2021"
+name    = "rand_felt"
+version = "0.1.0"
+
+[dependencies]
+rand     = "0.8.5"
+starknet = { git = "https://github.com/xJonathanLEI/starknet-rs", default-features = false }
