@@ -1,23 +1,12 @@
 pub mod submit_exercise;
 pub use submit_exercise::*;
-mod state_reader;
 
-macro_rules! unwrap_result_or_return {
-	( $e:expr, $f:expr) => {
-		match $e {
-			Ok(x) => x,
-			Err(_) => return $f,
-		}
-	};
-}
-pub(crate) use unwrap_result_or_return;
+use axum::{http::StatusCode, response::IntoResponse};
 
-macro_rules! unwrap_option_or_return {
-	( $e:expr, $f:expr) => {
-		match $e {
-			Some(x) => x,
-			None => return $f,
-		}
-	};
+use crate::domain::errors::Error;
+
+impl IntoResponse for Error {
+	fn into_response(self) -> axum::response::Response {
+		(StatusCode::INTERNAL_SERVER_ERROR, self.to_string()).into_response()
+	}
 }
-pub(crate) use unwrap_option_or_return;

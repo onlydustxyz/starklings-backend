@@ -1,11 +1,12 @@
 //! A service that Starklings certification tokens
 
-mod course_config;
+mod application;
+mod domain;
+mod infrastructure;
 mod routes;
 
 use axum::{routing::post, Router};
-use course_config::CourseConfig;
-use only_dust_contracts_api::only_dust_config::OnlyDustConfig;
+use infrastructure::course_config::CourseConfig;
 use routes::submit_exercise;
 use std::{
 	net::SocketAddr,
@@ -34,17 +35,15 @@ impl<T> ReadOnlySharedState<T> {
 #[tokio::main]
 async fn main() {
 	tracing_subscriber::fmt::init();
+
 	let app = Router::new().route("/exercise/submit", post(submit_exercise)).layer(
 		ServiceBuilder::new()
 			.layer(AddExtensionLayer::new(ReadOnlySharedState::new(
 				CourseConfig::read_from_toml(None),
 			)))
-			.layer(AddExtensionLayer::new(ReadOnlySharedState::new(
-				OnlyDustConfig::read_from_env(),
-			)))
 			.into_inner(),
 	);
-	let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+	let addr = SocketAddr::from(([127, 0, 0, 1], 8000));
 
 	axum::Server::bind(&addr).serve(app.into_make_service()).await.unwrap();
 }

@@ -17,6 +17,7 @@ tower-http = { version = "0.3.4", default-features = false, features = [
 ] }
 
 # utils
+async-trait = "0.1.56"
 lazy_static = { version = "1.4.0", default-features = false }
 serde       = { version = "1.0.137", features = ["derive"], default-features = false }
 toml        = { version = "0.5.9", default-features = false }

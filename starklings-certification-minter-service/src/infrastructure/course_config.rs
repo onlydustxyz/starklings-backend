@@ -1,3 +1,4 @@
+use crate::domain::traits::CourseConfigGetter;
 use serde::Deserialize;
 use starknet::core::types::FieldElement;
 use std::{collections::HashMap, fs, path::PathBuf};
@@ -55,16 +56,6 @@ impl CourseConfig {
 			exercises,
 		}
 	}
-}
-
-pub trait CourseConfigGetter {
-	/// Return the NFT id associated to a Starkling section
-	fn get_nft_id_for_section(&self, section_name: &str) -> Option<FieldElement>;
-	/// Return the unique identifier associated to a Starkling exercise
-	fn get_id_and_points_for_exercise(
-		&self,
-		exercise: &str,
-	) -> Option<(FieldElement, FieldElement)>;
 }
 
 impl CourseConfigGetter for CourseConfig {
